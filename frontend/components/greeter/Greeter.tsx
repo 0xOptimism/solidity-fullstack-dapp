@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import type { NextPage } from 'next'
 import { abi } from "../../abi.json"
 import { useContract, useSigner } from 'wagmi'
+import { formatEth, parseUnits } from '../../helpers';
+
 
 const Greeter: NextPage = () => {
   const { data: signer, isError, isLoading } = useSigner()
-  const [balance, setBalance] = useState('')
+  const [balance, setBalance] = useState(0)
 
 
   const contract = useContract({
@@ -25,8 +27,9 @@ const Greeter: NextPage = () => {
   const sendETH = async () => {
     if (signer) {
       try {
+        const numberOfEth = 3
         const option = {
-          value: "1000000000000000000"
+          value: parseUnits(numberOfEth.toString()),
         }
         await contract.deposit(option)
       } catch (error) {
@@ -42,7 +45,7 @@ const Greeter: NextPage = () => {
 
   return (
     <div>
-      <p>Smart contract balance: {balance} ETH</p>
+      <p>Smart contract balance: {formatEth(balance, "ether")} ETH</p>
       <button onClick={() => sendETH()}>Set New greeting</button>
     </div>
   )
