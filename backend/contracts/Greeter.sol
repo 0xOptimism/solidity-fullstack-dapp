@@ -4,19 +4,18 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 
 contract Greeter {
-    string private greeting;
+    address public owner;
+    mapping(address => uint256) balance;
 
-    constructor(string memory _greeting) {
-        console.log("Deploying a Greeter with greeting:", _greeting);
-        greeting = _greeting;
+    constructor() {
+        owner = msg.sender;
     }
 
-    function greet() public view returns (string memory) {
-        return greeting;
+    function deposit() public payable {
+        balance[owner] += msg.value;
     }
 
-    function setGreeting(string memory _greeting) public {
-        console.log("Changing greeting from '%s' to '%s'", greeting, _greeting);
-        greeting = _greeting;
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
     }
 }
