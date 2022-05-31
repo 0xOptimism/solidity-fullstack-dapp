@@ -6,7 +6,7 @@ import { formatEth, parseUnits } from '../../helpers';
 
 
 const Greeter: NextPage = () => {
-  const { data: signer, isError, isLoading } = useSigner()
+  const { data: signer } = useSigner()
   const [balance, setBalance] = useState(0)
 
 
