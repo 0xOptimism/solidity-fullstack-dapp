@@ -5,7 +5,7 @@ import { useContract, useSigner } from 'wagmi'
 import { formatEth, parseUnits } from '../../helpers';
 
 
-const Greeter: NextPage = () => {
+export const Greeter = () => {
   const { data: signer } = useSigner()
   const [balance, setBalance] = useState(0)
 
@@ -19,8 +19,12 @@ const Greeter: NextPage = () => {
 
   const getContractBalance = async () => {
     if (signer) {
-      const balance = await contract.getBalance()
-      setBalance(balance.toString())
+      try {
+        const balance = await contract.getBalance()
+        setBalance(balance.toString())
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 
@@ -51,4 +55,3 @@ const Greeter: NextPage = () => {
   )
 }
 
-export default Greeter;

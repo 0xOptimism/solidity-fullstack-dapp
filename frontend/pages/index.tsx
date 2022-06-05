@@ -1,7 +1,7 @@
 import type { NextPage } from 'next'
 import styles from '../styles/Home.module.css'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import Greeter from "../components/greeter/Greeter"
+import { Greeter } from "../components/index"
 
 const Home: NextPage = () => {
   return (
