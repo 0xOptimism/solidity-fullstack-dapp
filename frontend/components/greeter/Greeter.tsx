@@ -1,53 +1,51 @@
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import type { NextPage } from 'next'
 import { abi } from "../../abi.json"
 import { useContract, useSigner } from 'wagmi'
-import { formatEth, parseUnits } from '../../helpers';
+import { CONTRACT_ADDRESS } from '../../constant'
+import { Container, Input, Button } from '@chakra-ui/react'
 
 
 const Greeter: NextPage = () => {
-  const { data: signer, isError, isLoading } = useSigner()
-  const [balance, setBalance] = useState(0)
+  const { data: signer } = useSigner()
+  const [greeter, setGreeter] = useState('')
+  const [value, setValue] = useState('')
+  const handleChange = (event: { target: { value: SetStateAction<string>; }; }) => setValue(event.target.value)
+
 
 
   const contract = useContract({
-    addressOrName: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
+    addressOrName: CONTRACT_ADDRESS,
     contractInterface: abi,
     signerOrProvider: signer,
   })
 
-
-  const getContractBalance = async () => {
+  const updateContract = async (newMessage: string) => {
     if (signer) {
-      const balance = await contract.getBalance()
-      setBalance(balance.toString())
-    }
-  }
-
-  const sendETH = async () => {
-    if (signer) {
-      try {
-        const numberOfEth = 3
-        const option = {
-          value: parseUnits(numberOfEth.toString()),
-        }
-        await contract.deposit(option)
-      } catch (error) {
-        console.log(error)
-      }
-
+      const tx = await contract.update(newMessage)
+      await tx.wait()
+      const message = await contract.message()
+      setGreeter(message)
     }
   }
 
   useEffect(() => {
-    getContractBalance();
-  });
+    const getMessage = async () => {
+      if (signer) {
+        const message = await contract.message();
+        setGreeter(message)
+      }
+    }
+    getMessage()
+  }, [contract, signer])
 
   return (
-    <div>
-      <p>Smart contract balance: {formatEth(balance, "ether")} ETH</p>
-      <button onClick={() => sendETH()}>Set New greeting</button>
-    </div>
+    <Container mt={5}>
+      <Input value={value}
+        onChange={handleChange} placeholder='modify greeter' />
+      <Button onClick={() => updateContract(value)}>Change Greeter</Button>
+      <p>{greeter}</p>
+    </Container>
   )
 }
 
