@@ -49,4 +49,3 @@ const Greeter: NextPage = () => {
   )
 }
 
-export default Greeter;
